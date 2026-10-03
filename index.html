@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#110d16">
+<title>Dorama-LP</title>
+<style>
+:root{--ink:#110d16;--s1:#1b1523;--s2:#261d31;--line:#3a2d48;--tx:#f5eef7;--mu:#a898b5;--rose:#ff4f81;--gold:#f6c667;--jade:#46d6a8;--r:16px;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(120% 60% at 50% -10%,#2a1740,var(--ink) 60%) no-repeat var(--ink);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:18px 16px 48px}
+h1{font:700 32px/1.1 "Iowan Old Style",Georgia,serif;margin:6px 0 4px;letter-spacing:.2px}
+h2{font:700 20px/1.2 "Iowan Old Style",Georgia,serif;margin:0 0 12px}
+.sub{color:var(--mu);margin:0 0 18px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+label{display:block;margin-bottom:14px;font-weight:600;font-size:15px}
+.lbl{font-weight:600;font-size:15px;margin-bottom:8px}
+input[type=text],input[type=password],input[type=number],select,textarea,input[type=file]{display:block;width:100%;margin-top:6px;padding:12px;background:var(--s2);color:var(--tx);border:1px solid var(--line);border-radius:12px;font:inherit;font-weight:400;transition:border-color .2s,box-shadow .2s}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(255,79,129,.3)}
+textarea{resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.seg button{padding:12px 6px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--mu);font:600 15px inherit;font-family:inherit;transition:all .2s}
+.seg button.on{background:var(--rose);border-color:var(--rose);color:#fff}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;color:var(--mu);font-size:14px}
+.chk input{margin-top:3px;width:18px;height:18px;accent-color:var(--rose)}
+.btn{width:100%;padding:14px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--rose),#ff8a5b);color:#fff;font:700 16px system-ui,sans-serif;transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--s2);border:1px solid var(--line);color:var(--tx)}
+.btn.sm{width:auto;padding:9px 14px;font-size:14px;border-radius:10px}
+#pv{width:84px;height:84px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);margin:-6px 0 14px}
+.stage{position:relative;width:min(100%,calc(62vh*9/16));margin:0 auto 12px;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:#000}
+canvas{display:block;width:100%;aspect-ratio:9/16}
+#st{text-align:center;color:var(--mu);font-size:14px;margin:0 0 12px;min-height:21px}
+.ep{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.ep:first-child{border-top:0}
+.ep span{display:block;color:var(--mu);font-size:13px}
+.ep .acts{display:flex;gap:8px;flex-wrap:wrap}
+.ep a{color:var(--jade);font-weight:700;text-decoration:none;padding:9px 14px;border:1px solid var(--jade);border-radius:10px;font-size:14px}
+.note{color:var(--mu);font-size:13px;margin:10px 0 0}
+#toasts{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:9}
+.toast{background:var(--s2);border:1px solid var(--line);border-left:4px solid var(--jade);padding:10px 16px;border-radius:12px;max-width:92%;font-size:14px;animation:in .25s ease;transition:opacity .4s,transform .4s}
+.toast.err{border-left-color:var(--rose)}
+.toast.out{opacity:0;transform:translateY(8px)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.gear{flex:none;width:44px;height:44px;margin-top:6px;border-radius:12px;background:var(--s2);border:1px solid var(--line);color:var(--tx);font-size:20px}.btn:disabled{opacity:.5}.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:8}.modal[hidden]{display:none}.sheet{background:var(--s1);border:1px solid var(--line);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));width:100%;max-width:520px;max-height:88vh;overflow:auto}
+.tst{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 14px}.res{font-size:14px;color:var(--mu)}.res.ok{color:var(--jade)}.res.bad{color:var(--rose)}
+.mi{display:grid;grid-template-columns:64px 1fr 40px;gap:8px;align-items:center;margin-bottom:8px}.mi img,.mi video{width:64px;height:64px;object-fit:cover;border-radius:10px}.mi select{margin:0;padding:10px}.mi button{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--s2);color:var(--tx)}
+</style></head><body>
+<main>
+<div class="top"><div><h1>Dorama-LP</h1><p class="sub">Crie micro-doramas verticais e salve o vídeo no seu celular.</p></div><button class="gear" id="gear" type="button" aria-label="Ajustes">⚙</button></div>
+
+<section class="card" id="setup">
+<label>Título<input type="text" id="title" maxlength="60" placeholder="O Herdeiro da Chuva"></label>
+<label>Premissa<textarea id="prem" rows="3" maxlength="240" placeholder="Uma herdeira finge ser pobre para descobrir quem traiu sua família"></textarea></label>
+<label>Gênero<select id="gn"><option value="mix">Misto (um gênero por episódio)</option><option value="vg">Vingança</option><option value="rm">Romance proibido</option><option value="cr">Crime e máfia</option><option value="fm">Segredo de família</option><option value="ms">Mistério</option><option value="cu">Cultivo e artes marciais</option><option value="mg">Magia e fantasia</option></select></label>
+<div class="lbl">Estilo cultural</div>
+<div class="seg" id="seg"><button type="button" data-k="kr" class="on">Coreia</button><button type="button" data-k="cn">China</button><button type="button" data-k="in">Índia</button></div>
+<label>Cidade real da história<input type="text" id="cy" maxlength="40" placeholder="Ex.: Seul, São Paulo, Xangai"></label>
+<div class="lbl">Visual</div>
+<div class="seg" id="mseg" style="grid-template-columns:repeat(3,1fr)"><button type="button" data-k="anim" class="on">Animado</button><button type="button" data-k="media">Minhas imagens</button><button type="button" data-k="world">Mundo IA</button></div>
+<div id="mpanel" hidden><label>Suas imagens e vídeos (locações, pessoas, carros, ruas)<input type="file" id="media" accept="image/*,video/*" multiple></label><div id="mgrid"></div><p class="note" id="mcount" style="margin:0 0 6px"></p><p class="note" style="margin:0 0 14px">Marque quem aparece em cada arquivo. O app escolhe a imagem conforme quem está falando e abre cada cena com uma locação. Use bastante variedade.</p></div>
+<div id="wpanel" hidden><p class="note" style="margin:0 0 14px">Envie só o protagonista. O app descreve o personagem e cria com IA de imagem os cenários, as pessoas, os carros, as casas, as vilas e as locações de cada cena. Cada imagem leva cerca de 15 segundos sem chave da Pollinations; com a chave é mais rápido.</p></div>
+<label>Foto do protagonista<input type="file" id="photo" accept="image/*"></label>
+<button class="btn ghost sm" id="pasteimg" type="button" style="margin:-4px 0 14px">Colar imagem</button>
+<img id="pv" alt="Protagonista" hidden>
+<label>Nome do protagonista<input type="text" id="pn" maxlength="30" placeholder="Opcional"></label>
+<label>Descrição do personagem<textarea id="pd" rows="2" maxlength="200" placeholder="Ex.: pele morena, cabelo preto curto, casaco vermelho"></textarea></label>
+<div class="row">
+<label>Episódios<input type="number" id="ne" min="1" max="500" value="3" inputmode="numeric"></label>
+<label>Duração de cada (s)<input type="number" id="du" min="5" max="600" value="20" inputmode="numeric"></label>
+</div>
+<button class="btn" id="go" type="button">Criar dorama</button>
+<p class="note">Chaves de API (Gemini e ElevenLabs) ficam em ⚙ Ajustes, no canto superior. Versão 7, com Gemini.</p>
+</section>
+
+<section class="card" id="studio" hidden>
+<h2 id="sh"></h2>
+<div class="stage"><canvas id="cv" width="540" height="960"></canvas></div>
+<p id="st">Pronto para gravar.</p>
+<button class="btn ghost" id="stop" type="button" hidden>Parar</button>
+<div id="eps"></div>
+<button class="btn ghost" id="more" type="button" hidden style="margin-top:8px"></button>
+<div class="row" style="margin-top:12px"><label>Do episódio<input type="number" id="rf" min="1" value="1" inputmode="numeric"></label><label>Até o episódio<input type="number" id="rt" min="1" value="1" inputmode="numeric"></label></div>
+<label class="chk"><input type="checkbox" id="ad" checked><span>Baixar cada episódio automaticamente ao terminar</span></label>
+<button class="btn" id="all" type="button">Gravar esta faixa de episódios</button>
+<p class="note">Mantenha a tela ligada e esta aba aberta durante a gravação. O vídeo é gerado em tempo real, com a duração exata de cada episódio.</p>
+</section>
+</main>
+<div id="modal" class="modal" hidden><div class="sheet"><h2>Ajustes</h2>
+<p class="note" style="margin:0 0 14px">Tudo é opcional. Sem chaves, o app usa o roteirista interno e a voz do navegador.</p>
+<label>ElevenLabs (voz no vídeo)<input type="password" id="xk" autocomplete="off" placeholder="Chave da API"></label>
+<div class="tst"><button class="btn ghost sm" type="button" id="tx">Testar conexão</button><span class="res" id="rx" role="status"></span></div>
+<div class="row"><label>Voz protagonista<input type="text" id="v0" value="21m00Tcm4TlvDq8ikWAM"></label><label>Voz coadjuvante<input type="text" id="v1" value="EXAVITQu4vr4xnSDxMaL"></label></div>
+<div class="row"><label>Voz vilão<input type="text" id="v2" value="pNInz6obpgDQGcFmaJgB"></label><label>Voz detetive<input type="text" id="v3" value="ErXwobaYiN019PkySvjV"></label></div>
+<div class="row"><label>Voz chefe<input type="text" id="v4" value="VR6AewLTigWG4xSOukaG"></label><label>Voz amor<input type="text" id="v5" value="AZnzlk1XvdvUeBnXmlld"></label></div>
+<label>Gemini (grátis: busca na internet, roteiro e NPCs)<input type="password" id="gk" autocomplete="off" placeholder="Chave do Google AI Studio"></label>
+<div class="tst"><button class="btn ghost sm" type="button" id="tg">Testar conexão</button><span class="res" id="rg" role="status"></span></div>
+<label>Modelo Gemini (opcional)<input type="text" id="gm" placeholder="gemini-3.6-flash"></label>
+<label>Pollinations (imagens, opcional)<input type="password" id="pk" autocomplete="off" placeholder="Chave de enter.pollinations.ai"></label>
+<label class="chk"><input type="checkbox" id="mic"><span>Sem ElevenLabs: gravar a voz do navegador pelo microfone, que capta o alto-falante. Use sem fone.</span></label>
+<p class="note" style="margin:0 0 14px">As chaves ficam salvas só neste aparelho e são enviadas apenas ao serviço correspondente.</p>
+<div class="row"><button class="btn ghost" id="close" type="button">Fechar</button><button class="btn" id="save" type="button">Salvar</button></div></div></div>
+<div id="toasts"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+function toast(m,k){const t=document.createElement('div');t.className='toast '+(k||'');t.textContent=m;$('#toasts').appendChild(t);setTimeout(()=>t.classList.add('out'),2800);setTimeout(()=>t.remove(),3300)}
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const cv=$('#cv'),c=cv.getContext('2d');
+
+/* ---------- Estilos culturais ---------- */
+const STY={
+ kr:{a:'#1d1640',b:'#e0709a',l:'#ffe3ee',v:.8,n:['Joon-ho','Min-ji','Do-hyun','Detetive Han','Presidente Park','Ha-eun']},
+ cn:{a:'#2b0707',b:'#c8382a',l:'#ffd37a',v:-.6,n:['Li Wei','Xiao Mei','Chen Bo','Detetive Wu','Sr. Zhang','Lan']},
+ in:{a:'#3a1245',b:'#ff8a2b',l:'#ffe9a8',v:-.9,n:['Aarav','Priya','Vikram','Inspetor Rao','Sr. Mehta','Anaya']}
+};
+let S=STY.kr,styleKey='kr',photo=null,skin='#f1c9a5',eps=[],cfg={},busy=false,abort=false,parts=[];
+
+$('#seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;styleKey=b.dataset.k;[...$('#seg').children].forEach(x=>x.classList.toggle('on',x===b))});
+
+/* ---------- Foto: enviar ou colar ---------- */
+function usePhoto(f){
+ const im=new Image();
+ im.onload=()=>{
+  const P=document.createElement('canvas');P.width=P.height=256;const x=P.getContext('2d');
+  const m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)*.15,m,m,0,0,256,256);
+  try{const d=x.getImageData(118,150,20,20).data;let r=0,g=0,b=0,n=d.length/4;for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2]}skin=`rgb(${r/n|0},${g/n|0},${b/n|0})`}catch(_){}
+  photo=P;$('#pv').src=P.toDataURL('image/jpeg',.8);$('#pv').hidden=false;toast('Foto do protagonista definida');URL.revokeObjectURL(im.src)};
+ im.onerror=()=>toast('Não foi possível ler a imagem','err');
+ im.src=URL.createObjectURL(f)}
+$('#photo').addEventListener('change',e=>{if(e.target.files[0])usePhoto(e.target.files[0])});
+$('#pasteimg').onclick=async()=>{try{for(const it of await navigator.clipboard.read()){const t=it.types.find(x=>x.startsWith('image/'));if(t)return usePhoto(await it.getType(t))}toast('Nenhuma imagem copiada','err')}catch(_){toast('Use o menu de colar do teclado em um campo de texto','err')}};
+document.addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])].find(x=>x.type.startsWith('image/'));if(f){e.preventDefault();usePhoto(f)}});
+/* Descrição vira aparência quando faltar foto (cabelo, pele, roupa) */
+const CW={preto:'#0b0b0f',castanho:'#4a2c1a',loiro:'#d9b45a',ruivo:'#b5481f',branco:'#e8e8ee',grisalho:'#9a9aa5',azul:'#2a5bd7',rosa:'#ff7ab8',vermelho:'#d62839',verde:'#2e9e5b',roxo:'#7a3fc4',amarelo:'#f2c230',laranja:'#f28c28',cinza:'#7d7d88'};
+function look(){const d=($('#pd').value||'').toLowerCase(),o={};
+ const h=d.match(/cabelo[^,.;]*?(preto|castanho|loiro|ruivo|branco|grisalho|azul|rosa|roxo|vermelho)/);if(h)o.hair=CW[h[1]];
+ const k=d.match(/(casaco|camisa|vestido|roupa|terno|jaqueta|blusa)[^,.;]*?(preto|azul|vermelho|verde|branco|roxo|amarelo|rosa|laranja|cinza)/);if(k)o.cloth=CW[k[2]];
+ if(/pele[^,.;]*(clara|branca)/.test(d))o.skin='#f1c9a5';else if(/pele[^,.;]*(negra|escura)/.test(d))o.skin='#7a4a2e';else if(/pele[^,.;]*(morena|parda)/.test(d))o.skin='#c9916b';
+ return o}
+/* ---------- Montador: suas imagens e vídeos ---------- */
+let MODE='anim';const MA=[],R={};let mid=0;
+$('#mseg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;MODE=b.dataset.k;[...$('#mseg').children].forEach(x=>x.classList.toggle('on',x===b));$('#mpanel').hidden=MODE!=='media';$('#wpanel').hidden=MODE!=='world'});
+$('#media').addEventListener('change',e=>{[...e.target.files].forEach(addMedia);e.target.value=''});
+function addMedia(f){
+ const v=f.type.startsWith('video/');if(!v&&!f.type.startsWith('image/'))return;
+ const url=URL.createObjectURL(f),el=v?document.createElement('video'):new Image(),m={id:++mid,v,el,url,tag:'x'};
+ if(v){el.muted=true;el.loop=true;el.playsInline=true;el.preload='auto'}
+ el.src=url;MA.push(m);renderMedia()}
+function renderMedia(){
+ const g=$('#mgrid');g.innerHTML='';
+ MA.forEach(m=>{const d=document.createElement('div');d.className='mi';
+  const t=document.createElement(m.v?'video':'img');t.src=m.url+(m.v?'#t=0.1':'');if(m.v){t.muted=true;t.preload='metadata'}
+  const s=document.createElement('select');[['x','Qualquer'],['loc','Cidade ou locação'],['0','Protagonista'],['1','Aliado'],['2','Vilão'],['3','Detetive'],['4','Chefe'],['5','Amor']].forEach(([k,n])=>{const o=document.createElement('option');o.value=k;o.textContent=n;s.appendChild(o)});
+  s.value=m.tag;s.onchange=()=>{m.tag=s.value};
+  const r=document.createElement('button');r.type='button';r.textContent='✕';r.setAttribute('aria-label','Remover');r.onclick=()=>{MA.splice(MA.indexOf(m),1);URL.revokeObjectURL(m.url);renderMedia()};
+  d.append(t,s,r);g.append(d)});
+ $('#mcount').textContent=MA.length+(MA.length===1?' arquivo':' arquivos')}
+function assignMedia(ep){
+ const pick=key=>{let pool=MA.filter(a=>a.tag===key);if(!pool.length)pool=MA.filter(a=>a.tag==='x');if(!pool.length)pool=MA;R[key]=(R[key]||0)+1;return pool[R[key]%pool.length]};
+ ep.lines.forEach((L,i)=>{const first=i===0||L.sc!==ep.lines[i-1].sc;L.m=first&&MA.some(a=>a.tag==='loc')?pick('loc'):pick(String(L.s))})}
+function drawMedia(m,t,lt){
+ const w=m?(m.v?m.el.videoWidth:m.el.naturalWidth):0,h=m?(m.v?m.el.videoHeight:m.el.naturalHeight):0;
+ if(!w){if(MODE==='world')c.drawImage(bgc,0,0);else{c.fillStyle='#000';c.fillRect(0,0,540,960);if(!MA.length){c.fillStyle='#777';c.font='26px system-ui,sans-serif';c.textAlign='center';c.fillText('Adicione imagens ou vídeos',270,480)}}return}
+ const k=Math.max(540/w,960/h)*(1.06+(m.v?0:Math.min(lt,6)*.012)),dw=w*k,dh=h*k,px=m.v?0:Math.sin(m.id)*Math.min(lt,6)*5;
+ c.drawImage(m.el,270-dw/2+px,480-dh/2,dw,dh);c.fillStyle='rgba(10,18,40,.14)';c.fillRect(0,0,540,960)}
+/* Rosto padrão do protagonista (ficha de personagem enviada) */
+const DEF='data:image/jpeg;base64,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';
+{const im=new Image();im.onload=()=>{if(photo)return;const P=document.createElement('canvas');P.width=P.height=256;const x=P.getContext('2d');x.drawImage(im,0,0,256,256);try{const q=x.getImageData(118,150,20,20).data;let r=0,g=0,b=0,n=q.length/4;for(let i=0;i<q.length;i+=4){r+=q[i];g+=q[i+1];b+=q[i+2]}skin=`rgb(${r/n|0},${g/n|0},${b/n|0})`}catch(_){}photo=P;$('#pv').src=DEF;$('#pv').hidden=false};im.src=DEF}
+/* ---------- Ajustes (localStorage) ---------- */
+const KEYS=['xk','v0','v1','v2','v3','v4','v5','gk','gm','pk'];
+function loadCfg(){try{const o=JSON.parse(localStorage.getItem('dlp')||'{}');KEYS.forEach(k=>{if(o[k])$('#'+k).value=o[k]});$('#mic').checked=!!o.mic}catch(_){}}
+function saveCfg(){try{const o={mic:$('#mic').checked};KEYS.forEach(k=>o[k]=$('#'+k).value.trim());localStorage.setItem('dlp',JSON.stringify(o));toast('Ajustes salvos')}catch(_){toast('Este navegador não permite salvar os ajustes','err')}$('#modal').hidden=true}
+$('#gear').onclick=()=>$('#modal').hidden=false;$('#save').onclick=saveCfg;$('#close').onclick=()=>$('#modal').hidden=true;loadCfg();
+
+/* ---------- Testar conexão das chaves ---------- */
+async function test(btn,out,fn){
+ const e=$(out);btn.disabled=true;e.className='res';e.textContent='Testando…';
+ let ok=false,m;
+ try{[ok,m]=await fn()}catch(x){m=x&&x.name==='AbortError'?'Tempo esgotado. Verifique a internet.':'Sem conexão com o serviço ou bloqueio do navegador.'}
+ e.className='res '+(ok?'ok':'bad');e.textContent=(ok?'✓ ':'✗ ')+m;toast(m,ok?'':'err');btn.disabled=false}
+$('#tx').onclick=()=>test($('#tx'),'#rx',async()=>{
+ const k=$('#xk').value.trim();if(!k)return[false,'Cole a chave da ElevenLabs primeiro.'];
+ const r=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent($('#v0').value.trim())+'?output_format=mp3_22050_32',{signal:to(20000),method:'POST',headers:{'xi-api-key':k,'Content-Type':'application/json'},body:JSON.stringify({text:'Oi',model_id:'eleven_multilingual_v2'})});
+ if(r.ok)return[true,'Chave aceita e voz funcionando. Toque em Salvar.'];
+ return[false,r.status===401?'Chave recusada pela ElevenLabs.':(r.status===404||r.status===422)?'Chave aceita, mas o ID da voz do protagonista não foi encontrado.':(r.status===402||r.status===429)?'Chave aceita, mas sem créditos ou no limite de uso.':'A ElevenLabs respondeu com erro '+r.status+'.']});
+$('#tg').onclick=()=>test($('#tg'),'#rg',async()=>{
+ const k=$('#gk').value.trim();if(!k)return[false,'Cole a chave do Gemini primeiro.'];
+ try{await gem(k,{contents:[{role:'user',parts:[{text:'Responda apenas: ok'}]}],generationConfig:{maxOutputTokens:16}},20000);return[true,'Chave aceita pelo Google. Toque em Salvar.']}
+ catch(e){if(!/^gemini/.test(e.message))throw e;const st=+e.message.match(/\d+/)[0];
+  return[false,(st===400||st===401||st===403)?'Chave recusada pelo Google (inválida ou sem permissão).':st===429?'Chave aceita, mas o limite gratuito foi atingido. Tente mais tarde.':st===404?'Chave provavelmente aceita, mas o modelo não foi encontrado. Escreva o modelo atual no campo abaixo.':'O Google respondeu com erro '+st+'.']}});
+$('#xk').oninput=()=>{$('#rx').textContent=''};$('#gk').oninput=()=>{$('#rg').textContent=''};
+
+/* ---------- Roteirista: estruturas de micro-dorama viral ---------- */
+/* Playbook interno: gancho nos 3 primeiros segundos, falas curtas, conflito crescente,
+   uma reviravolta por episódio e cliffhanger no fim. Não consulta a internet. */
+const HK=[[2,'Você tem até meia-noite para sumir da minha vida, {a}.','angry'],[1,'{a}... ele mentiu para você desde o primeiro dia.','shock'],[0,'Eles acham que eu perdi. Isso é só o começo.','serious'],[2,'Você não é quem pensa que é, {a}.','shock']];
+const CF=[[0,'{p}. E ninguém sabe a verdade.','sad'],[1,'{a}, olhe para mim. Você está em perigo.','worry'],[2,'Eu avisei. Mas você nunca escuta.','angry'],[0,'Eu não vou chorar na frente de você.','serious'],[1,'Todo mundo sabe, menos você.','worry'],[2,'Isso é só uma pequena parte do plano.','angry']];
+const TW=[[1,'O contrato tem a sua assinatura, {a}.','shock'],[0,'Então foi você, {c}? Desde o início?','shock'],[2,'Seu pai nunca morreu, {a}.','shock'],[1,'Aquela noite foi planejada por {c}.','shock']];
+const CL=[[2,'Abra a porta, {a}. E veja quem está lá.','angry'],[0,'Isso muda tudo. Absolutamente tudo.','shock'],[1,'Corra, {a}! Ele já está aqui!','shock']];
+const EN=[0,'Foi assim que {t} terminou. A verdade venceu.','sad'];
+const nLines=D=>Math.max(1,Math.min(60,Math.round((D-1.4)/3.6)));
+const LOC={Centro:null,Cobertura:['#160c2c','#6a3d9a'],Porto:['#06202e','#1f7a8c'],Hospital:['#0e2a2a','#7fd1c7'],Delegacia:['#1b1b24','#6b6f85'],Clube:['#2a0a22','#ff2d8f']};
+/* Cidade viva: cada evento acontece fora da vista do protagonista e vira notícia no episódio seguinte */
+const GN={
+vg:[['Cobertura',[[4,'Ele descobriu tudo. Resolva isso hoje.','angry'],[2,'Vou tirar tudo dele antes do amanhecer.','angry']],'o nome de {a} sumiu dos registros da empresa'],['Clube',[[2,'Comprei a dívida de todos eles.','serious'],[4,'Ótimo. Quem deve, obedece.','angry']],'alguém comprou a dívida do prédio inteiro'],['Delegacia',[[3,'Esse arquivo foi adulterado.','shock'],[1,'Então alguém poderoso protege {c}.','worry']],'um arquivo secreto sumiu da delegacia']],
+rm:[['Clube',[[5,'Ele não pode saber que nos vimos.','worry'],[2,'Então termine tudo. Hoje.','angry']],'{l} foi vista jantando escondida'],['Centro',[[5,'Eu escolhi você, mesmo com o risco.','sad'],[1,'Então prepare-se. A cidade vai falar.','worry']],'uma foto vazou na internet'],['Cobertura',[[4,'Meu filho jamais ficará com essa pessoa.','angry'],[5,'O senhor não decide meu coração.','serious']],'o noivado da família {k} foi cancelado']],
+cr:[['Porto',[[2,'O carregamento chega à meia-noite.','serious'],[4,'Sem testemunhas. Entendeu?','angry']],'um navio parou no porto sem avisar'],['Delegacia',[[3,'Alguém nos entregou. Há um traidor.','shock'],[1,'Eu já suspeitava de {c}.','worry']],'a polícia fechou o porto de madrugada'],['Clube',[[2,'O dinheiro sumiu. Todo mundo é suspeito.','angry'],[4,'Traga {a} aqui. Preciso conversar.','angry']],'um cofre foi esvaziado no centro']],
+fm:[['Cobertura',[[4,'Ninguém pode abrir esse testamento.','angry'],[2,'Ele já sabe do segundo filho.','shock']],'o testamento foi adiado outra vez'],['Hospital',[[1,'Ela acordou. E perguntou por {a}.','shock'],[3,'Então a história oficial é mentira.','shock']],'uma paciente antiga acordou no hospital'],['Centro',[[2,'Aquela casa nunca foi nossa.','sad'],[4,'Cale-se. Escondo isso há anos.','angry']],'a casa da família foi colocada à venda']],
+ms:[['Delegacia',[[3,'As câmeras ficaram desligadas por oito minutos.','serious'],[1,'Oito minutos bastam para sumir com alguém.','worry']],'as câmeras da cidade apagaram por oito minutos'],['Hospital',[[3,'Nenhum registro de entrada. Ela nunca esteve aqui.','shock'],[2,'Perfeito. Então ninguém lembra.','angry']],'uma testemunha desapareceu sem deixar rastro'],['Porto',[[5,'Achei isto no cais. É a letra de {a}.','shock'],[3,'Isso muda a investigação inteira.','shock']],'acharam um bilhete misterioso no cais']]};
+const GID=['vg','rm','cr','fm','ms','cu','mg'];
+LOC.Vila=['#2a1a10','#a8672f'];LOC.Casa=['#1a1410','#6b5a46'];LOC.Guerra=['#1a1a1a','#6e6a60'];const PL=['Centro','Casa','Vila','Centro','Cobertura'];
+LOC.Seita=['#0b1d2e','#4aa3c7'];LOC.Templo=['#2a1608','#d9a441'];LOC.Floresta=['#06200f','#2e9e5b'];
+GN.cu=[['Seita',[[4,'Quem rompeu o selo do Pico Celestial?','angry','furia'],[2,'Foi {a}. A aura dele já supera a sua.','shock','aura']],'a aura de {a} acendeu o céu sobre a montanha'],['Templo',[[2,'Roubei a técnica proibida dos Nove Dragões.','serious','magia'],[4,'Então prepare-se para a fúria dos anciãos.','angry','furia']],'a técnica proibida dos Nove Dragões foi roubada'],['Floresta',[[3,'Esse rastro de energia vem do coração da floresta.','shock','aura'],[1,'Alguém está cultivando em segredo, {d}.','worry']],'uma aura desconhecida surgiu na floresta']];
+GN.mg=[['Templo',[[4,'O círculo de runas está se rompendo.','worry','magia'],[2,'Perfeito. Sem o selo, o poder será meu.','angry','magia']],'o selo mágico da cidade começou a rachar'],['Cobertura',[[2,'O feitiço de sangue já está em andamento.','serious','magia'],[5,'Pare agora. Isso vai destruir {a}.','shock','tecnica']],'um círculo mágico foi visto no topo do prédio'],['Floresta',[[1,'Eu sinto a magia dele crescendo, {d}.','shock','aura'],[3,'Então é hora de ensinar a técnica final.','serious','tecnica']],'uma tempestade de energia cobriu a floresta']];
+const CU=[[0,'Meu cultivo travou. Preciso romper esse limite hoje.','serious','aura'],[2,'Sua aura é fraca, {a}. Me impressione.','angry','furia'],[0,'Esta técnica custou dez anos da minha vida.','serious','tecnica'],[1,'Sinto uma aura de outro reino, {a}. Cuidado.','worry','aura']];
+function genLocal(e,N,D){
+ const n=nLines(D),sel=$('#gn').value,g=sel==='mix'?GID[e%GID.length]:sel,ev=GN[g][e%3];
+ const pe=e?GN[sel==='mix'?GID[(e+GID.length-1)%GID.length]:sel][(e-1)%3]:null;
+ const f=s=>s.replace(/{a}/g,S.n[0]).replace(/{b}/g,S.n[1]).replace(/{c}/g,S.n[2]).replace(/{d}/g,S.n[3]).replace(/{k}/g,S.n[4]).replace(/{l}/g,S.n[5]).replace(/{p}/g,cfg.prem.replace(/[.!?\s]+$/,'')).replace(/{t}/g,cfg.title);
+ const mk=(sc,loc,off,a)=>a.map(l=>({s:l[0],text:f(l[1]),emo:l[2],fx:l[3],sc,loc,off}));
+ const off=n>=4?2:n===3?1:0,pc=n-1-off,P=[];
+ const mid=(g==='cu'||g==='mg')?CU:CF,tg=trend&&trend.ganchos&&trend.ganchos[e%trend.ganchos.length];
+ if(pc>=1)P.push(tg&&e%2?[1,'Todo mundo comenta: '+String(tg).slice(0,110)+'.','shock']:(e?[1,'Viu o noticiário, {a}? Dizem que '+pe[2]+'.','shock']:HK[cfg.prem.length%HK.length]));
+ for(let k=0;k<pc-2;k++)P.push(mid[(e*2+k+(e?1:0))%mid.length]);
+ if(pc>=2)P.push(TW[e%TW.length]);
+ const out=mk(0,PL[e%PL.length],false,P);
+ if(off)out.push(...mk(1,ev[0],true,ev[1].slice(0,off)));
+ out.push(...mk(off?2:0,PL[e%PL.length],false,[e===N-1?EN:CL[e%CL.length]]));out.forEach(l=>{if(l.s>0&&!l.off&&world[l.s])l.emo=world[l.s]});out.forEach(l=>{if(l.off)world[l.s]=l.emo});if(g==='cu'||g==='mg'){out.forEach((l,i)=>{if(!l.fx)l.fx=l.emo==='angry'?'furia':l.emo==='shock'?'aura':(i%3===0?'magia':null)});out[out.length-1].fx='tecnica'}
+ return out}
+/* Diretor: elenco de cada cena, câmera, horário e destaque de legenda */
+function direct(L,e){
+ const cs={};
+ L.forEach(l=>{l.sc|=0;l.off=!!l.off;l.fx=FXC[l.fx]?l.fx:null;l.loc=LOC[l.loc]!==undefined?l.loc:'Centro';l.s=clamp(l.s|0,0,5);(cs[l.sc]=cs[l.sc]||new Set()).add(l.s)});
+ return L.map((l,i)=>{const st=cs[l.sc];if(!l.off)st.add(0);if(st.size<2)st.add(l.s===2?4:2);l.cast=[...st];
+  l.tm=String((20+e*2+l.sc)%24).padStart(2,'0')+(l.sc?':40':':05');
+  l.shot=(i>0&&(l.emo==='shock'||l.emo==='angry'||i===L.length-1))?'punch':'focus';
+  const w=l.text.split(' ');let k=0;w.forEach((x,j)=>{if(x.replace(/\W/g,'').length>w[k].replace(/\W/g,'').length)k=j});l.kw=k;return l})}
+const PB='Você é roteirista de micro-doramas verticais virais ambientados numa metrópole viva, onde os fatos acontecem mesmo sem o protagonista presente. Os NPCs 1 a 5 têm objetivos próprios e agem sozinhos: reagem ao contexto, mentem, se aliam e se traem, e suas falas refletem o que aconteceu antes. Aplique: gancho chocante na primeira fala, falas de até 12 palavras, ritmo acelerado, uma reviravolta por episódio e cliffhanger na última fala (o último episódio resolve). Cada episódio tem cenas (sc = 0, 1, 2): inclua uma cena "Enquanto isso" (off:true) SEM o protagonista, cujas consequências aparecem no episódio seguinte. loc em Centro, Cobertura, Porto, Hospital, Delegacia, Clube, Seita, Templo, Floresta, Vila (bairro pobre), Casa (lar humilde) ou Guerra (zona de conflito). Quando houver cultivo, magia, técnicas, aura ou fúria, use o campo fx (aura, magia, tecnica ou furia). Se o gênero for Misto, use um gênero diferente por episódio. Português do Brasil. Responda SOMENTE JSON: {"resumo":"2 frases do que aconteceu até o fim deste lote","eps":[[{"s":0,"text":"...","emo":"shock","sc":0,"loc":"Centro","off":false,"fx":null}]]} com s de 0 a 5 e emo em sad, angry, shock, worry, serious.';
+async function aiScript(key,from,count,prev){
+ const n=nLines(cfg.D),u='Gênero: '+$('#gn').selectedOptions[0].text+'\nTítulo: '+cfg.title+'\nPremissa: '+cfg.prem
+  +(cfg.city?'\nCidade real onde se passa: '+cfg.city+' (use bairros, lugares e costumes reais)':'')+(['cu','mg'].includes($('#gn').value)?'':'\nEstilo: drama realista e contemporâneo, sem elementos fantasiosos')+'\nSérie com '+cfg.N+' episódios. Gere os episódios '+(from+1)+' a '+(from+count)+' (a história está em '+Math.round(from/cfg.N*100)+'% do arco total).\nFalas por episódio: exatamente '+n
+  +(prev?'\nResumo do que já aconteceu: '+prev:'')+(trend?'\nTendências atuais da internet: '+JSON.stringify(trend):'')+'\nDescrição do protagonista: '+($('#pd').value.trim()||'livre')
+  +'\nPersonagens: 0='+S.n[0]+' (protagonista), 1='+S.n[1]+' (aliado), 2='+S.n[2]+' (vilão), 3='+S.n[3]+' (detetive), 4='+S.n[4]+' (chefe poderoso), 5='+S.n[5]+' (interesse amoroso). Objetivos: 1 aliado leal que esconde um medo; 2 vilão calculista; 3 detetive obstinado; 4 chefe que protege segredos; 5 amor dividido entre dois lados.';
+ const j=await gem(key,{systemInstruction:{parts:[{text:PB}]},contents:[{role:'user',parts:[{text:u}]}],generationConfig:{responseMimeType:'application/json',maxOutputTokens:Math.min(30000,1500+count*n*90)}},90000);
+ const o=JSON.parse(gt(j).replace(/```json|```/g,'').trim());
+ return{resumo:String(o.resumo||'').slice(0,600),eps:o.eps.slice(0,count).map(ep=>ep.slice(0,n).map(l=>({s:l.s,text:String(l.text).slice(0,140),emo:EMO[l.emo]?l.emo:'serious',sc:l.sc,loc:l.loc,off:l.off,fx:l.fx})))}}
+/* ---------- Gemini (gratuito): busca na web e roteiro ---------- */
+const to=ms=>{const a=new AbortController();setTimeout(()=>a.abort(),ms);return a.signal};
+let trend=null,world={};
+const gt=j=>(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+async function gem(key,body,ms){
+ let st=0;
+ for(const m of [$('#gm').value.trim(),'gemini-3.6-flash','gemini-3-flash-preview'].filter(Boolean)){
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{signal:to(ms),method:'POST',headers:{'x-goog-api-key':key,'content-type':'application/json'},body:JSON.stringify(body)});
+  if(r.ok)return r.json();
+  st=r.status;if(st!==404)break}
+ throw new Error('gemini '+st)}
+async function research(key){
+ const g=$('#gn').selectedOptions[0].text;
+ const j=await gem(key,{tools:[{google_search:{}}],contents:[{role:'user',parts:[{text:'Pesquise na internet o que está em alta agora em micro-doramas verticais e dramas curtos (TikTok, ReelShort, DramaBox) para o gênero "'+g+'". Responda SOMENTE JSON: {"ganchos":["5 ganchos de abertura atuais"],"viradas":["3 reviravoltas populares"]}'}]}]},25000);
+ const o=JSON.parse(gt(j).match(/\{[\s\S]*\}/)[0]);
+ o.fontes=[...new Set((j.candidates?.[0]?.groundingMetadata?.groundingChunks||[]).map(x=>x.web&&x.web.title).filter(Boolean))].slice(0,4);
+ return o}
+const sumAt={},bp={};let shown=10,aiWarn=false;
+function ensure(i){
+ if(eps[i].lines)return Promise.resolve();
+ const from=i-i%cfg.B;
+ return bp[from]||(bp[from]=(async()=>{
+  const to=Math.min(eps.length,from+cfg.B),ck=$('#gk').value.trim();
+  if(ck){
+   const pk=Object.keys(sumAt).map(Number).filter(k=>k<=from).sort((x,y)=>y-x)[0];
+   try{const o=await aiScript(ck,from,to-from,pk===undefined?'':sumAt[pk]);
+    o.eps.forEach((l,k)=>{const e=eps[from+k];if(e&&!e.lines&&l.length)e.lines=direct(l,from+k)});sumAt[to]=o.resumo||(pk===undefined?'':sumAt[pk])}
+   catch(_){if(!aiWarn){aiWarn=true;toast('IA de roteiro indisponível. Usando o roteirista interno','err')}}}
+  for(let k=from;k<to;k++)if(!eps[k].lines)eps[k].lines=direct(genLocal(k,eps.length,eps[k].dur),k)})())}
+let making=false;
+$('#go').onclick=async()=>{
+ if(busy||making)return toast('Aguarde a tarefa atual terminar','err');
+ const title=$('#title').value.trim(),prem=$('#prem').value.trim(),N=+$('#ne').value,D=+$('#du').value;
+ if(!title)return toast('Digite o título do dorama','err');
+ if(!prem)return toast('Escreva a premissa da história','err');
+ if(!(N>=1&&N<=500))return toast('Escolha de 1 a 500 episódios','err');
+ if(!(D>=5&&D<=600))return toast('Cada episódio deve ter de 5 a 600 segundos','err');
+ if(MODE==='media'&&!MA.length)return toast('Adicione pelo menos uma imagem ou vídeo','err');
+ making=true;$('#go').disabled=true;S={...STY[styleKey],n:[...STY[styleKey].n]};if($('#pn').value.trim())S.n[0]=$('#pn').value.trim();cfg={title,prem,N,D,city:$('#cy').value.trim()};
+ let sc=null;trend=null;world={};const ck=$('#gk').value.trim();
+ if(ck){toast('Buscando tendências na internet…');try{trend=await research(ck)}catch(_){toast('Busca indisponível. Usando o repertório interno','err')}}
+ if(MODE==='world'){toast('Descrevendo o protagonista…');prot=await describeProt()}
+ toast('Roteirista montando a história…');
+  eps=[...Array(N)].map(()=>({dur:D,lines:null}));cfg.B=Math.max(1,Math.min(8,Math.floor(240/nLines(D))));Object.keys(sumAt).forEach(k=>delete sumAt[k]);Object.keys(bp).forEach(k=>delete bp[k]);aiWarn=false;shown=10;$('#rt').value=Math.min(N,10);$('#rf').max=$('#rt').max=N;
+ await ensure(0);
+ initActors();initParts();$('#sh').textContent=title;$('#studio').hidden=false;list();draw0();
+ $('#st').textContent=trend?'Tendências usadas. Fontes: '+((trend.fontes||[]).join(', ')||'web'):'Roteiro e câmeras prontos. As vozes são geradas ao gravar.';
+ $('#studio').scrollIntoView({behavior:'smooth'});toast('Dorama criado com '+N+(N>1?' episódios':' episódio')+' · cerca de '+(N*D/3600).toFixed(1)+' h de vídeo');
+ making=false;$('#go').disabled=false};
+
+/* ---------- Atores ---------- */
+let actors=[];
+function initActors(){
+ const mk=(sk,hair,cloth,ph)=>({x:0,y:0,s:1,skin:sk,hair,cloth,photo:ph?photo:null,ph:Math.random()*6,bl:0,bt:-9,nb:1+Math.random()*2,m:0,emo:'serious',talk:false});
+ const lk=look();actors=[mk(photo?skin:(lk.skin||'#c9916b'),lk.hair||'#0b0b0f',lk.cloth||'#1f1f26',1),mk('#f4d2b4','#5b3a2a','#46d6a8'),mk('#e8bf9a','#0d0d12','#4a1426'),mk('#d9a982','#6b6b6b','#8a7a5a'),mk('#ecc9a6','#cfcfcf','#1b2a4a'),mk('#f1c9a5','#2b1a3a','#c9477a')];
+ actors.forEach((a,i)=>a.name=S.n[i]);place([0,2])}
+function initParts(){parts=[...Array(34)].map((_,i)=>({x:Math.random()*540,y:Math.random()*960,r:2+Math.random()*(styleKey==='cn'?7:4),o:.2+Math.random()*.4,v:S.v*(.5+Math.random()),k:i}))}
+
+function drawActor(a,t){
+ const br=Math.sin(t*2.1+a.ph);
+ if(t>a.nb){a.bt=t;a.nb=t+2+Math.random()*3}
+ a.bl=t-a.bt<.16?Math.sin((t-a.bt)/.16*Math.PI):0;
+ a.m+=((a.talk?(lvl>=0?lvl:.25+.75*Math.abs(Math.sin(t*13+a.ph)*Math.cos(t*5.3))):0)-a.m)*.5;
+ c.save();c.translate(a.x,a.y+br*3);c.scale(a.s,a.s*(1+br*.006));
+ c.fillStyle=a.cloth;c.beginPath();c.moveTo(-95,270);c.quadraticCurveTo(-100,60,-40,40);c.lineTo(40,40);c.quadraticCurveTo(100,60,95,270);c.fill();
+ c.fillStyle='rgba(255,255,255,.16)';c.beginPath();c.moveTo(-30,40);c.lineTo(0,100);c.lineTo(30,40);c.fill();
+ c.fillStyle=a.skin;c.fillRect(-16,0,32,50);
+ c.translate(Math.sin(t*.9+a.ph)*2,0);c.rotate(Math.sin(t*.7+a.ph)*.03+(a.talk?Math.sin(t*5)*.02:0));
+ c.fillStyle=a.hair;c.beginPath();c.ellipse(0,-62,59,71,0,0,7);c.fill();
+ if(a.photo){
+  c.save();c.beginPath();c.ellipse(0,-55,50,62,0,0,7);c.clip();c.drawImage(a.photo,-66,-122,132,132);
+  if(a.bl>.05){c.fillStyle=a.skin;[-22,22].forEach(x=>{c.beginPath();c.ellipse(x,-66,15,a.bl*9,0,0,7);c.fill()})}
+  c.restore();
+  if(a.m>.1){c.fillStyle='#5a1220';c.beginPath();c.ellipse(0,-24,13+a.m*3,a.m*11,0,0,7);c.fill()}
+ }else{
+  c.fillStyle=a.skin;c.beginPath();c.ellipse(0,-55,50,62,0,0,7);c.fill();
+  c.fillStyle='rgba(255,100,130,.22)';[-30,30].forEach(x=>{c.beginPath();c.arc(x,-40,9,0,7);c.fill()});
+  c.fillStyle='#1b1118';[-20,20].forEach(x=>{c.beginPath();c.ellipse(x,-62,5.5,7*(1-a.bl)+.8,0,0,7);c.fill()});
+  const tl={angry:6,sad:-5,worry:-4,shock:0,serious:2}[a.emo]||0,lf=a.emo==='shock'?-8:0;
+  c.strokeStyle=a.hair;c.lineWidth=4;c.lineCap='round';
+  [-1,1].forEach(s=>{c.beginPath();c.moveTo(s*10,-78+tl+lf);c.lineTo(s*32,-80-tl*.5+lf);c.stroke()});
+  if(a.m>.08){c.fillStyle='#7a1f33';c.beginPath();c.ellipse(0,-26,10+a.m*5,3+a.m*12,0,0,7);c.fill()}
+  else{const k=(a.emo==='angry'||a.emo==='sad'||a.emo==='worry')?-5:4;c.strokeStyle='#a33b4f';c.lineWidth=3;c.beginPath();c.moveTo(-12,-26);c.quadraticCurveTo(0,-26+k*2,12,-26);c.stroke()}
+  c.fillStyle=a.hair;c.beginPath();c.moveTo(-56,-80);c.quadraticCurveTo(-30,-135,0,-122);c.quadraticCurveTo(35,-135,58,-80);c.quadraticCurveTo(30,-100,0,-96);c.quadraticCurveTo(-30,-100,-56,-80);c.fill()}
+ c.restore()}
+
+/* ---------- Render ---------- */
+const cam={x:270,y:520,z:1,tx:270,ty:520,tz:1,dr:0};let flash=0;
+let pal=null,city=[],vis=[0,2];
+function mkCity(sd){let h=0;for(const ch of sd)h=(h*31+ch.charCodeAt(0))|0;const r=()=>{h=(h*1664525+1013904223)|0;return((h>>>8)&0xffff)/65536};const b=[];let x=-10;while(x<550){const w=34+r()*40;b.push({x,w,h:170+r()*300,s:r()});x+=w+2}return b}
+function setLoc(L){const p=LOC[L.loc];pal=p?{a:p[0],b:p[1]}:{a:S.a,b:S.b};city=mkCity(L.loc+L.sc);paintBg()}
+function place(ca){vis=ca.slice(0,4);const sl=vis.length<3?[[175,1,610],[365,1.05,610]]:vis.length===3?[[130,.95,615],[270,.8,560],[410,.95,615]]:[[95,.85,615],[205,.78,560],[335,.78,560],[445,.85,615]];vis.forEach((k,j)=>{const a=actors[k],p=sl[j];a.x=p[0];a.s=p[1];a.y=p[2]})}
+const bgc=document.createElement('canvas'),VG=document.createElement('canvas');bgc.width=VG.width=540;bgc.height=VG.height=960;
+{const x=VG.getContext('2d'),v=x.createRadialGradient(270,480,200,270,480,620);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.6)');x.fillStyle=v;x.fillRect(0,0,540,960)}
+function paintBg(){const x=bgc.getContext('2d'),P=pal||{a:S.a,b:S.b},g=x.createLinearGradient(0,0,0,960);g.addColorStop(0,P.a);g.addColorStop(1,P.b);x.fillStyle=g;x.fillRect(0,0,540,960);
+ x.fillStyle='rgba(8,5,14,.82)';for(const b of city)x.fillRect(b.x,790-b.h,b.w,b.h);
+ x.fillStyle='rgba(255,214,120,.5)';for(const b of city)for(let y=790-b.h+14;y<780;y+=22)for(let X=b.x+6;X<b.x+b.w-8;X+=14)if((X*7+y*13+(b.s*100|0))%5<2)x.fillRect(X,y,5,8);
+ x.fillStyle='rgba(0,0,0,.35)';x.fillRect(0,790,540,170)}
+function bg(t){c.drawImage(bgc,0,0);c.fillStyle=S.l;
+ for(const p of parts){p.y+=p.v;p.x+=Math.sin(t+p.k)*.4;if(p.y>980)p.y=-20;if(p.y<-20)p.y=980;c.globalAlpha=p.o;c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill()}
+ c.globalAlpha=1}
+const FXC={aura:'255,214,120',magia:'150,110,255',furia:'255,40,70',tecnica:'90,220,255'};
+function fxBack(L,t){const a=actors[L.s],col=FXC[L.fx];if(!a||!col||L.fx==='tecnica')return;
+ const x=a.x,y=a.y-50*a.s,r=(L.fx==='furia'?170:140)*a.s+Math.sin(t*6)*12,g=c.createRadialGradient(x,y,10,x,y,r);
+ g.addColorStop(0,'rgba('+col+',.55)');g.addColorStop(1,'rgba('+col+',0)');c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill();
+ if(L.fx!=='furia'){c.strokeStyle='rgba('+col+',.8)';c.lineWidth=3;c.setLineDash([10,14]);for(let k=1;k<=2;k++){const w=t*k*(k%2?1:-1);c.beginPath();c.arc(x,y,r*.5*k,w,w+5.2);c.stroke()}c.setLineDash([])}
+ if(L.fx==='aura')for(let k=0;k<8;k++){const u=(t*.6+k/8)%1;c.fillStyle='rgba('+col+','+(1-u)*.9+')';c.beginPath();c.arc(x+Math.sin(k*2.1)*60*a.s,y+110*a.s-u*220*a.s,3,0,7);c.fill()}}
+function fxFront(L,lt){if(L.fx!=='tecnica')return;const a=actors[L.s],o=vis.map(k=>actors[k]).find(q=>q!==a);if(!a||!o)return;
+ const u=clamp(lt/.7,0,1),x0=a.x,y0=a.y-40*a.s,x1=o.x,y1=o.y-40*o.s,v=Math.max(0,u-.35);
+ c.save();c.lineCap='round';c.strokeStyle='rgba(90,220,255,.9)';c.lineWidth=10*(1-u*.5);c.shadowColor='#5adcff';c.shadowBlur=24;
+ c.beginPath();c.moveTo(x0+(x1-x0)*v,y0+(y1-y0)*v);c.lineTo(x0+(x1-x0)*u,y0+(y1-y0)*u);c.stroke();
+ if(u>=1){const w=clamp((lt-.7)/.5,0,1);c.globalAlpha=1-w;c.lineWidth=6;c.beginPath();c.arc(x1,y1,30+w*130,0,7);c.stroke()}c.restore()}
+function card(L,dt){c.save();c.globalAlpha=Math.min(1,(1.2-dt)*3);c.fillStyle='rgba(0,0,0,.62)';c.fillRect(60,92,420,100);c.textAlign='center';c.fillStyle='#f6c667';c.font='700 30px Georgia,serif';c.fillText(L.off?'Enquanto isso…':(cfg.city||L.loc),270,126);c.fillStyle='#fff';c.font='600 22px system-ui,sans-serif';c.fillText((L.off?(cfg.city?cfg.city+' · ':'')+L.loc+' · ':'')+L.tm,270,166);c.restore()}
+function cap(L,prog){
+ c.font='800 38px system-ui,sans-serif';c.textAlign='left';c.textBaseline='middle';c.lineJoin='round';
+ const ws=L.text.split(' '),rows=[[]];let w=0;
+ ws.forEach((x,i)=>{const m=c.measureText(x+' ').width;if(w+m>470&&rows[rows.length-1].length){rows.push([]);w=0}rows[rows.length-1].push({x,i,m});w+=m});
+ const act=Math.min(ws.length-1,Math.floor(prog*ws.length));let y=800-(rows.length-1)*26;
+ c.textAlign='center';c.font='700 22px system-ui,sans-serif';c.fillStyle=S.l;c.fillText(actors[L.s].name,270,y-44);c.textAlign='left';c.font='800 38px system-ui,sans-serif';
+ rows.forEach(r=>{let x=270-r.reduce((s,o)=>s+o.m,0)/2;r.forEach(o=>{c.lineWidth=9;c.strokeStyle='#000';c.strokeText(o.x,x,y);c.fillStyle=o.i===act?'#f6c667':(o.i===L.kw?'#ff4f81':'#fff');c.fillText(o.x,x,y);x+=o.m});y+=50})}
+function frameDraw(t,ep,i,L,prog,dt=9,lt=0){
+ if(MODE==='anim')bg(t);
+ cam.z=cam.tz+cam.dr*clamp(prog,0,1);
+ c.save();c.translate(270,480);c.scale(cam.z,cam.z);c.translate(-cam.tx,-cam.ty);if(L&&L.fx==='furia')c.translate((Math.random()-.5)*8,(Math.random()-.5)*8);if(L&&MODE==='anim')fxBack(L,t);
+ if(MODE!=='anim')drawMedia(((L||(ep.lines&&ep.lines[0]))||{}).m,t,lt);else{[...vis].sort((p,q)=>actors[p].s-actors[q].s).forEach(k=>drawActor(actors[k],t));if(L)fxFront(L,lt)}
+ c.restore();
+ c.drawImage(VG,0,0);if(L&&L.fx==='furia'){c.fillStyle='rgba(200,0,40,'+(.12+.08*Math.sin(t*10))+')';c.fillRect(0,0,540,960)}
+ if(L){if(MODE!=='anim'){const g=c.createLinearGradient(0,640,0,960);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.7)');c.fillStyle=g;c.fillRect(0,640,540,320)}cap(L,prog)}if(L&&dt<1.2)card(L,dt);
+ c.fillStyle='#ff4f81';c.fillRect(0,0,540*t/ep.dur,6);
+ c.textAlign='center';c.font='700 22px Georgia,serif';c.fillStyle='#fff';c.shadowColor='#000';c.shadowBlur=6;c.fillText(cfg.title+'  ·  Ep '+(i+1)+'/'+cfg.N,270,44);c.shadowBlur=0;
+ if(t<.8){c.globalAlpha=1-t/.8;c.font='700 70px Georgia,serif';c.fillStyle='#f6c667';c.fillText('Ep '+(i+1),270,480);c.globalAlpha=1}
+ if(flash>0){c.fillStyle='rgba(255,255,255,'+flash*.35+')';c.fillRect(0,0,540,960);flash-=.12}}
+function draw0(){place([0,1,2]);pal=null;city=mkCity('centro');paintBg();cam.tx=270;cam.ty=520;cam.tz=1;cam.dr=0;actors.forEach(a=>a.talk=false);frameDraw(.01,{dur:1},0,null,0)}
+
+/* ---------- Áudio ---------- */
+let AC,DEST,MST,AN,ANd,lvl=-1,drone,micStream,voices=[];
+function loadVoices(){voices=window.speechSynthesis?speechSynthesis.getVoices():[]}
+loadVoices();if(window.speechSynthesis)speechSynthesis.onvoiceschanged=loadVoices;
+function noise(d){const b=AC.createBuffer(1,AC.sampleRate*d,AC.sampleRate),x=b.getChannelData(0);for(let i=0;i<x.length;i++)x[i]=Math.random()*2-1;const s=AC.createBufferSource();s.buffer=b;return s}
+function initAudio(){AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume();
+ if(!DEST){DEST=AC.createMediaStreamDestination();MST=AC.createGain();MST.gain.value=.8;MST.connect(AC.destination);MST.connect(DEST);AN=AC.createAnalyser();AN.fftSize=512;ANd=new Uint8Array(AN.fftSize);AN.connect(MST)}}
+function startDrone(){const o=AC.createOscillator(),o2=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain(),l=AC.createOscillator(),lg=AC.createGain();
+ o.type='sawtooth';o.frequency.value=55;o2.type='sine';o2.frequency.value=82;f.type='lowpass';f.frequency.value=220;g.gain.value=.07;l.frequency.value=.35;lg.gain.value=.03;
+ l.connect(lg);lg.connect(g.gain);o.connect(f);o2.connect(f);f.connect(g);g.connect(MST);o.start();o2.start();l.start();drone=()=>{[o,o2,l].forEach(x=>{try{x.stop()}catch(_){}})}}
+function sfx(k){if(!AC)return;const n=AC.currentTime,g=AC.createGain();g.connect(MST);
+ if(k==='whoosh'){const s=noise(.3),f=AC.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(300,n);f.frequency.exponentialRampToValueAtTime(3000,n+.25);g.gain.setValueAtTime(.18,n);g.gain.exponentialRampToValueAtTime(.001,n+.28);s.connect(f);f.connect(g);s.start(n)}
+ else if(k==='hit'){const o=AC.createOscillator();o.frequency.setValueAtTime(110,n);o.frequency.exponentialRampToValueAtTime(30,n+.6);g.gain.setValueAtTime(.7,n);g.gain.exponentialRampToValueAtTime(.001,n+.7);o.connect(g);o.start(n);o.stop(n+.7)}
+ else{[0,.22].forEach(d=>{const o=AC.createOscillator(),h=AC.createGain();o.frequency.value=58;h.gain.setValueAtTime(.001,n+d);h.gain.exponentialRampToValueAtTime(.6,n+d+.03);h.gain.exponentialRampToValueAtTime(.001,n+d+.2);o.connect(h);h.connect(MST);o.start(n+d);o.stop(n+d+.25)})}}
+const EMO={sad:{p:.8,r:.88},angry:{p:1.1,r:1.1},shock:{p:1.4,r:1.12},worry:{p:1.1,r:.96},serious:{p:.92,r:.96}};
+function say(L,rate,done){
+ if(!window.speechSynthesis)return;
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(L.text),e=EMO[L.emo]||EMO.serious,v=voices.find(x=>/^pt[-_]BR/i.test(x.lang))||voices.find(x=>/^pt/i.test(x.lang));
+ u.lang='pt-BR';if(v)u.voice=v;u.pitch=clamp(e.p+[0,.25,-.3,-.1,-.4,.15][L.s],.1,2);u.rate=clamp(rate*e.r,.7,1.7);u.onend=done;speechSynthesis.speak(u)}
+
+/* ---------- ElevenLabs ---------- */
+const VS={sad:[.6,.8,.2],angry:[.25,.8,.7],shock:[.2,.8,.8],worry:[.4,.8,.4],serious:[.55,.8,.3]};
+async function synth(ep){
+ initAudio();const key=$('#xk').value.trim(),todo=ep.lines.filter(L=>!L.buf);let q=0,err=null;
+ const work=async()=>{while(q<todo.length&&!err){const L=todo[q++],v=VS[L.emo]||VS.serious,id=$('#v'+L.s).value.trim();
+  try{const r=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(id)+'?output_format=mp3_44100_128',{method:'POST',headers:{'xi-api-key':key,'Content-Type':'application/json'},body:JSON.stringify({text:L.text,model_id:'eleven_multilingual_v2',voice_settings:{stability:v[0],similarity_boost:v[1],style:v[2],use_speaker_boost:true}})});
+   if(!r.ok)throw new Error(r.status===401?'Chave da ElevenLabs inválida':r.status===404?'ID de voz não encontrado':'ElevenLabs respondeu com erro '+r.status);
+   L.buf=await AC.decodeAudioData(await r.arrayBuffer())}catch(e){err=err||e}}};
+ await Promise.all([work(),work(),work()]);if(err)throw err}
+function level(){AN.getByteTimeDomainData(ANd);let s=0;for(const v of ANd){const x=(v-128)/128;s+=x*x}return clamp(Math.sqrt(s/ANd.length)*6,0,1)}
+
+/* ---------- Mundo automático: IA de imagem (Pollinations) ---------- */
+const LP={Centro:'busy downtown street in {c} at night with real cars, taxis and pedestrians',Cobertura:'luxury penthouse interior with floor-to-ceiling windows over the {c} skyline',Porto:'industrial harbor at night with shipping containers, cranes and fog',Hospital:'dim hospital corridor with fluorescent lights',Delegacia:'police station interior with desks and files',Clube:'upscale nightclub with neon lights and a crowd',Seita:'misty mountain temple courtyard at dawn',Templo:'ancient stone temple interior lit by candles',Floresta:'dense forest at dusk with fog',Vila:'crowded low-income hillside neighborhood in {c} with narrow alleys, tin roofs and laundry lines',Casa:'modest small apartment interior with worn furniture and a single lamp',Guerra:'war-torn city street with smoke, rubble, military vehicles and soldiers in the distance'};
+const RD=['{p}','a loyal close friend in their early thirties','a cold calculating man in a tailored dark suit','a weary detective in a worn trench coat','a powerful elderly executive with silver hair','an elegant young person, the love interest'];
+const ED={sad:'eyes full of tears, real grief',angry:'furious intense glare, tense jaw',shock:'wide eyes, stunned expression',worry:'anxious worried expression',serious:'stern serious expression'};
+let prot='a young man with short black hair, serious face, dark clothing',wq=Promise.resolve(),gnext=0,wfail=false;
+async function describeProt(){
+ const key=$('#gk').value.trim(),d=$('#pd').value.trim();
+ if(!key||!photo)return d||prot;
+ try{const j=await gem(key,{contents:[{role:'user',parts:[{inlineData:{mimeType:'image/jpeg',data:photo.toDataURL('image/jpeg',.8).split(',')[1]}},{text:"Describe in English, in one line for an image generator, this person's apparent age range, hair, face shape, build and clothing. Do not guess ethnicity, name or identity."}]}],generationConfig:{maxOutputTokens:120}},30000);return(gt(j).trim()||prot)+(d?', '+d:'')}catch(_){return d||prot}}
+function wprompt(L,first){
+ const lc=(LP[L.loc]||LP.Centro).replace('{c}',cfg.city||'a big modern city'),fx=L.fx==='furia'?', harsh red light':L.fx==='aura'?', dramatic golden rim light':'';
+ const sub=first?'wide establishing shot, '+lc:'medium close-up of '+RD[L.s].replace('{p}',prot)+', '+ED[L.emo]+', background: '+lc;
+ return sub+fx+', photorealistic cinematic film still, 35mm lens, shallow depth of field, natural skin texture, soft film grain, moody lighting, vertical 9:16, no text, no watermark'}
+const wgap=()=>$('#pk').value.trim()?3000:16000;
+function wurl(pr,sd){const k=$('#pk').value.trim(),q='width=720&height=1280&nologo=true&seed='+sd;return k?'https://gen.pollinations.ai/image/'+encodeURIComponent(pr)+'?'+q+'&key='+encodeURIComponent(k):'https://image.pollinations.ai/prompt/'+encodeURIComponent(pr)+'?'+q}
+function wgen(pr,sd){
+ return new Promise(res=>{wq=wq.then(async()=>{
+  await new Promise(r=>setTimeout(r,Math.max(0,gnext-Date.now())));gnext=Date.now()+wgap();
+  for(let a=0;a<3;a++){try{const r=await fetch(wurl(pr,sd+a),{signal:to(90000)});if(!r.ok)throw 0;const el=new Image();el.src=URL.createObjectURL(await r.blob());await el.decode();return res({id:++mid,v:false,el})}catch(_){await new Promise(r=>setTimeout(r,wgap()))}}
+  if(!wfail){wfail=true;toast('Não consegui gerar uma imagem. Usando o cenário animado nessa cena','err')}res(null)})})}
+function prepWorld(i){
+ const ep=eps[i];if(!ep)return Promise.resolve();
+ return ep.wp||(ep.wp=(async()=>{
+  await ensure(i);
+  const s0=([...cfg.title].reduce((h,ch)=>(h*31+ch.charCodeAt(0))|0,7)>>>0)%99999,todo=[];ep.imgs={};ep.nd=0;
+  ep.lines.forEach((L,k)=>{const first=k===0||L.sc!==ep.lines[k-1].sc,key=L.sc+'|'+(first?'E':L.s);L.key=key;if(!(key in ep.imgs)){ep.imgs[key]=null;todo.push([key,wprompt(L,first),L.s===0?s0:s0+L.s*101+i])}});
+  ep.ntot=todo.length;ep.imgp=todo.map(([key,pr,sd])=>wgen(pr,sd).then(a=>{ep.imgs[key]=a;ep.nd++}))})())}
+/* ---------- Som ambiente por locação ---------- */
+let ambStop=null;
+function thump(){if(!AC)return;const n=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(70,n);o.frequency.exponentialRampToValueAtTime(25,n+.8);g.gain.setValueAtTime(.3,n);g.gain.exponentialRampToValueAtTime(.001,n+.9);o.connect(g);g.connect(MST);o.start(n);o.stop(n+.9)}
+function beep(){if(!AC)return;const n=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.frequency.value=880;g.gain.setValueAtTime(.05,n);g.gain.exponentialRampToValueAtTime(.001,n+.18);o.connect(g);g.connect(MST);o.start(n);o.stop(n+.2)}
+function amb(loc){
+ if(!AC)return;if(ambStop)ambStop();
+ const nodes=[],g=AC.createGain();g.gain.value=0;g.gain.linearRampToValueAtTime(1,AC.currentTime+.8);g.connect(MST);let iv=null;
+ const ns=(type,f,q,vol)=>{const s=noise(2),fl=AC.createBiquadFilter(),v=AC.createGain();s.loop=true;fl.type=type;fl.frequency.value=f;fl.Q.value=q;v.gain.value=vol;s.connect(fl);fl.connect(v);v.connect(g);s.start();nodes.push(s)};
+ const tone=(f,vol)=>{const o=AC.createOscillator(),v=AC.createGain();o.frequency.value=f;v.gain.value=vol;o.connect(v);v.connect(g);o.start();nodes.push(o)};
+ if(loc==='Centro'||loc==='Vila'){ns('lowpass',700,.7,.12);ns('bandpass',1800,.8,.02)}
+ else if(loc==='Guerra'){ns('lowpass',250,.7,.14);iv=setInterval(()=>{if(Math.random()<.5)thump()},2500)}
+ else if(loc==='Hospital'){tone(120,.02);iv=setInterval(beep,1300)}
+ else if(loc==='Clube'){tone(55,.1);ns('lowpass',400,.7,.05);iv=setInterval(thump,500)}
+ else if(loc==='Floresta'||loc==='Seita'||loc==='Templo'){ns('bandpass',500,.6,.08)}
+ else if(loc==='Porto'){ns('lowpass',300,.7,.1)}
+ else ns('lowpass',200,.7,.04);
+ ambStop=()=>{clearInterval(iv);nodes.forEach(n=>{try{n.stop()}catch(_){}});try{g.disconnect()}catch(_){}}}
+/* ---------- Motor de cena ---------- */
+function play(ep,idx){
+ return new Promise(res=>{
+  const D=ep.dur,n=ep.lines.length,lead=.8,tail=.6,slot=(D-lead-tail)/n;
+  let cur=-2,t0=null,raf,speakUntil=0,ls=0,src=null,curBuf=false,curM=null;
+  initAudio();startDrone();amb(ep.lines[0].loc);place(ep.lines[0].cast);setLoc(ep.lines[0]);if(MODE!=='anim'){if(MODE==='world')ep.lines.forEach(L=>{L.m=(ep.imgs&&ep.imgs[L.key])||null});else assignMedia(ep);curM=ep.lines[0].m;if(curM&&curM.v){curM.el.currentTime=0;curM.el.play().catch(()=>{})}}
+  actors.forEach(a=>{a.emo='serious';a.talk=false});
+  function cut(i,t){
+   const L=i>=0?ep.lines[i]:null;
+   if(!L){cam.tx=270;cam.ty=520;cam.tz=1;cam.dr=.1;return}
+   if(i===0||L.sc!==ep.lines[i-1].sc){place(L.cast);setLoc(L);amb(L.loc)}
+   const sp=actors[L.s];
+   actors.forEach((a,k)=>{a.emo=k===L.s?L.emo:(L.emo==='angry'?'worry':'serious')});
+   const big=L.shot==='punch';
+   if(i===0){cam.tx=270;cam.ty=520;cam.tz=1.05;cam.dr=.15}
+   else{cam.tx=sp.x;cam.ty=sp.y-60*sp.s;cam.tz=big?2.1:1.6;cam.dr=big?.35:.15}
+   if(MODE!=='anim'){cam.tx=270;cam.ty=480;cam.tz=big?1.22:1.04;cam.dr=big?.16:.08;if(curM&&curM.v)curM.el.pause();curM=L.m;if(curM&&curM.v){curM.el.currentTime=0;curM.el.play().catch(()=>{})}}
+   flash=1;sfx('whoosh');if(big)sfx('hit');if(L.emo==='shock')setTimeout(()=>sfx('heart'),180);
+   try{if(src)src.stop()}catch(_){}src=null;curBuf=!!L.buf;
+   if(L.buf){const rt=clamp(L.buf.duration/Math.max(.8,slot-.15),1,1.35);src=AC.createBufferSource();src.buffer=L.buf;src.playbackRate.value=rt;src.connect(AN);src.start();ls=t;speakUntil=t+Math.min(slot-.05,L.buf.duration/rt);return}
+   const est=L.text.length/14,rate=clamp(est/Math.max(.8,slot-.3),.7,1.7);
+   ls=t;speakUntil=t+Math.min(slot-.15,est/rate);
+   say(L,rate,()=>{speakUntil=Math.min(speakUntil,(performance.now()-t0)/1000)})}
+  function end(){cancelAnimationFrame(raf);try{if(curM&&curM.v)curM.el.pause()}catch(_){}try{if(src)src.stop()}catch(_){}lvl=-1;if(ambStop){ambStop();ambStop=null}if(drone)drone();if(window.speechSynthesis)speechSynthesis.cancel();actors.forEach(a=>a.talk=false);res()}
+  function frame(now){
+   if(t0===null)t0=now;
+   const t=(now-t0)/1000;
+   if(abort||t>=D)return end();
+   const i=t<lead?-1:Math.min(n-1,Math.floor((t-lead)/slot));
+   if(i!==cur){cur=i;cut(i,t)}
+   const L=i>=0?ep.lines[i]:null,st=L?lead+i*slot:0;
+   actors.forEach((a,k)=>a.talk=!!L&&L.s===k&&t<speakUntil);lvl=curBuf?level():-1;
+   frameDraw(t,ep,idx,L,L?(t-st)/Math.max(.5,speakUntil-st):0,L&&(i===0||L.sc!==ep.lines[i-1].sc)?t-st:9,L?t-st:0);
+   raf=requestAnimationFrame(frame)}
+  raf=requestAnimationFrame(frame)})}
+
+/* ---------- Gravação ---------- */
+const MIMES=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+async function runEp(i,rec){
+ await ensure(i);if(eps[i+1])ensure(i+1);const ep=eps[i];let mr=null,chunks=[],mime='';
+ if(MODE==='world'){prepWorld(i+1);await prepWorld(i);const iv=setInterval(()=>{$('#st').textContent='Criando o mundo do episódio '+(i+1)+': imagem '+Math.min(ep.nd+1,ep.ntot)+' de '+ep.ntot},600);await Promise.all(ep.imgp);clearInterval(iv)}
+ if($('#xk').value.trim()){$('#st').textContent='Gerando vozes com ElevenLabs…';try{await(ep.pre||synth(ep));if(eps[i+1]&&!eps[i+1].pre)eps[i+1].pre=ensure(i+1).then(()=>synth(eps[i+1])).catch(()=>{})}catch(e){toast((e.message||'Falha na ElevenLabs')+'. Usando a voz do navegador','err')}}
+ if(rec){
+  if(!window.MediaRecorder||!cv.captureStream){toast('Este navegador não suporta gravação de vídeo','err');return false}
+  mime=MIMES.find(m=>MediaRecorder.isTypeSupported(m))||'';
+  initAudio();
+  if($('#mic').checked&&!micStream){try{micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});AC.createMediaStreamSource(micStream).connect(DEST)}catch(_){toast('Microfone indisponível. Gravando só os efeitos sonoros','err')}}
+  const stream=new MediaStream([...cv.captureStream(30).getVideoTracks(),...DEST.stream.getAudioTracks()]);
+  try{mr=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:4e6}:{videoBitsPerSecond:4e6})}catch(e){toast('Falha ao iniciar a gravação','err');return false}
+  mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};mr.start(250)}
+ $('#st').textContent=(rec?'Gravando':'Exibindo')+' episódio '+(i+1)+'…';
+ await play(ep,i);
+ if(rec){
+  await new Promise(r=>{mr.onstop=r;mr.stop()});
+  if(abort)return false;
+  const type=(mr.mimeType||mime||'video/webm').split(';')[0];
+  if(ep.url)URL.revokeObjectURL(ep.url);
+  ep.blob=new Blob(chunks,{type});ep.ext=type.includes('mp4')?'mp4':'webm';ep.url=URL.createObjectURL(ep.blob);
+  toast('Episódio '+(i+1)+' gravado');if($('#ad').checked)dl(ep,i);if(eps.length>10){const u=ep.url;setTimeout(()=>{URL.revokeObjectURL(u);if(ep.url===u){ep.url=ep.blob=null;ep.done=true;list()}},6000);ep.lines.forEach(l=>{l.buf=null;if(MODE==='world')l.m=null});ep.pre=null;if(MODE==='world')ep.imgs=ep.wp=ep.imgp=null}list()}
+ return true}
+async function job(ids,rec){
+ if(busy)return toast('Já existe uma gravação em andamento','err');
+ initAudio();busy=true;abort=false;$('#stop').hidden=false;let lock=null;
+ try{lock=await navigator.wakeLock.request('screen')}catch(_){}
+ for(const i of ids){if(abort)break;const ok=await runEp(i,rec);if(!ok)break}
+ if(lock)try{lock.release()}catch(_){}
+ if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null}
+ $('#st').textContent=abort?'Interrompido.':'Pronto.';if(abort)toast('Gravação interrompida');
+ busy=false;abort=false;$('#stop').hidden=true;draw0()}
+$('#stop').onclick=()=>{abort=true};
+$('#all').onclick=()=>{const a=clamp((+$('#rf').value|0)||1,1,eps.length),b=clamp((+$('#rt').value|0)||a,a,eps.length);job(Array.from({length:b-a+1},(_,k)=>a-1+k),true)};
+
+function btn(txt,fn,cls){const b=document.createElement('button');b.type='button';b.className='btn sm '+(cls||'');b.textContent=txt;b.onclick=fn;return b}
+function list(){
+ const box=$('#eps');box.innerHTML='';
+ eps.slice(0,shown).forEach((e,i)=>{
+  const d=document.createElement('div');d.className='ep';
+  d.innerHTML='<div><b>Episódio '+(i+1)+'</b><span>'+e.dur+'s · '+(e.lines?e.lines.length:nLines(e.dur))+' falas'+(e.url?' · vídeo pronto':e.done?' · baixado':'')+'</span></div>';
+  const a=document.createElement('div');a.className='acts';
+  a.append(btn('Ver',()=>job([i],false),'ghost'),btn('Gravar',()=>job([i],true)));
+  if(e.url){
+   const dl=document.createElement('a');dl.href=e.url;dl.download=(cfg.title.replace(/[^\w]+/g,'-').toLowerCase()||'dorama')+'-ep'+(i+1)+'.'+e.ext;dl.textContent='Baixar';a.append(dl);
+   const f=new File([e.blob],dl.download,{type:e.blob.type});
+   if(navigator.canShare&&navigator.canShare({files:[f]}))a.append(btn('Salvar em Arquivos',()=>navigator.share({files:[f],title:cfg.title}).catch(()=>{}),'ghost'))}
+  d.append(a);box.append(d)});$('#more').hidden=eps.length<=shown;$('#more').textContent='Mostrar mais ('+(eps.length-shown)+' restantes)'}
+$('#more').onclick=()=>{shown+=20;list()};
+function dl(ep,i){const a=document.createElement('a');a.href=ep.url;a.download=(cfg.title.replace(/[^\w]+/g,'-').toLowerCase()||'dorama')+'-ep'+(i+1)+'.'+ep.ext;document.body.appendChild(a);a.click();a.remove()}
+</script></body></html>
